@@ -1,0 +1,5 @@
+jenkins:
+  systemMessage: "Hello! Welcome to my Jenkins instance :)"
+
+jobs:
+  - file: "/var/jenkins_home/job_dsl.groovy"
