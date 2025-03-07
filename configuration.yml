@@ -25,15 +25,23 @@ jenkins:
           - name: "admin"
             description: "Marvin master"
             permissions: ["Overall/Administer"]
+            entries:
+              - user: "chocolateen"
           - name: "ape"
             description: "Pedagogical team member"
-            permissions: ["Job/Build", "Job/Workspace", "Job/View"]
+            permissions: ["Job/Build", "Job/Workspace", "Overall/Read"]
+            entries:
+              - user: "i_dont_know"
           - name: "gorilla"
             description: "Group Obsessively Researching Innovation Linked to Learning and Accomplishment"
-            permissions: ["Job/Build", "Job/Workspace", "Job/Configure", "Job/Create", "Job/Delete", "Job/Cancel", "Job/View"]
+            permissions: ["Job/Build", "Job/Workspace", "Job/Configure", "Job/Create", "Job/Delete", "Job/Cancel", "Overall/Read"]
+            entries:
+              - user: "vaugie_g"
           - name: "assist"
             description: "Assistant"
-            permissions: ["Job/View", "Job/Workspace"]
+            permissions: ["Overall/Read", "Job/Workspace"]
+            entries:
+              - user: "nasso"
 
 jobs:
   - file: "/var/jenkins_home/job_dsl.groovy"
