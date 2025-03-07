@@ -1,5 +1,24 @@
 jenkins:
-  systemMessage: "Hello! Welcome to my Jenkins instance :)"
+  systemMessage: "Welcome to the Chocolatine-Powered Marvin Jenkins Instance."
+
+  SecurityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "chocolateen"
+          name: "Hugo"
+          password: ${USER_CHOCOLATEEN_PASSWORD}
+        - id: "vaugie_g"
+          name: "Garance"
+          password: ${USER_VAUGIE_G_PASSWORD}
+        - id: "i_dont_know"
+          name: "Jeremy"
+          password: ${USER_I_DONT_KNOW_PASSWORD}
+        - id: "nasso"
+          name: "Nassim"
+          password: ${USER_NASSO_PASSWORD}
+          
+          
 
 jobs:
   - file: "/var/jenkins_home/job_dsl.groovy"
