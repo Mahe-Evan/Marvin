@@ -68,6 +68,7 @@ job ("Tools/SEED") {
                         git {
                             remote {
                                 github(githubName)
+                                credentials('github-credentials')
                             }
                             branches('*/main', '*/master')
                         }
