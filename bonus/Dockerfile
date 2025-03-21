@@ -21,7 +21,8 @@ RUN jenkins-plugin-cli --plugins \
     structs:latest \
     role-strategy:latest \
     ws-cleanup:latest \
-    workflow-job:latest
+    workflow-job:latest \
+    envinject:latest
 
 # Install Docker
 RUN apt-get update && \

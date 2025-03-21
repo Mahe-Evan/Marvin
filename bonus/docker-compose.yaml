@@ -9,14 +9,29 @@ services:
       - 50000:50000
     volumes:
       - jenkins_home:/var/jenkins_home
-      - ./configuration.yml:/var/jenkins_home/casc_configs/jenkins.yaml
+      - ./my_marvin.yml:/var/jenkins_home/casc_configs/jenkins.yaml
       - ./job_dsl.groovy:/var/jenkins_home/job_dsl.groovy
+      - /mnt/jenkins_builds:/mnt/jenkins_builds
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins.yaml
     env_file:
       - ./.env
     # restart: on-failure
+    networks:
+      - my_network
+
+  epitest:
+    image: epitechcontent/epitest-docker
+    networks:
+      - my_network
+    volumes:
+      - /mnt/jenkins_builds:/mnt/jenkins_builds
+    command: ["sleep", "infinity"]
 
 volumes:
   jenkins_home:
+
+networks:
+  my_network:
+    driver: bridge
