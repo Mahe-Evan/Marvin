@@ -173,8 +173,8 @@ Example:
                             name("BANNED_FUNCTIONS_MODE")
                             defaultValue(bannedFunctionsMode)
                             description("""Mode for checking banned functions.
-                - True for Allowed: Check if the project contains any of the allowed functions.
-                - False for Banned: Check if the project contains any of the banned functions.
+- True for Allowed: Check if the project contains any of the allowed functions.
+- False for Banned: Check if the project contains any of the banned functions.
                             """.stripIndent())
                         }
 
@@ -506,6 +506,45 @@ Example:
                             : "###########################################################"
 
                             cd ${'$'}WORKSPACE
+
+                            # Create the memory leaks check script directly in the Docker container
+                            docker exec mymarvin-epitest-1 bash -c "cat > /tmp/memory_leaks_check.sh << 'EOF'
+                            #!/bin/bash
+
+                            cd ${'$'}WORKSPACE
+
+                            ulimit -n 1024
+
+                            # Setting up the list of executables
+                            echo \\\\"\\\\${'$'}MEMORY_LEAKS_TEST_COMMANDS\\\\" | while IFS= read -r command; do
+                                [[ -z \\\\"\\\\${'$'}command\\\\" ]] && continue
+
+                                valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1 -s bash -c \\\\"\\\\${'$'}command\\\\" 2>&1 | tee valgrind.log
+                                if grep -q \\\\"ERROR SUMMARY: [^0]\\\\" valgrind.log; then
+                                    errors=\\\\${'$'}(grep \\\\"ERROR SUMMARY:\\\\" valgrind.log | awk '{print \\\\${'$'}4}')
+                                    contexts=\\\\${'$'}(grep \\\\"ERROR SUMMARY:\\\\" valgrind.log | awk '{print \\\\${'$'}7}')
+                                    echo \\\\"::error::Memory leaks detected. \\\\${'$'}errors errors from \\\\${'$'}contexts contexts\\\\"
+                                    rm valgrind.log
+                                    exit 1
+                                fi
+                                rm valgrind.log
+                            done
+                            EOF"
+
+                            # Compile the program
+                            docker exec mymarvin-epitest-1 bash -c "cd ${'$'}WORKSPACE && (make) > output.txt"
+                            cat output.txt
+
+                            # Make the script executable and run it in Docker
+                            docker exec mymarvin-epitest-1 bash -c "chmod +x /tmp/memory_leaks_check.sh && \
+                                export MEMORY_LEAKS_TEST_COMMANDS='${'$'}{MEMORY_LEAKS_TEST_COMMANDS}' && \
+                                /tmp/memory_leaks_check.sh"
+
+                            # Get the exit code from Docker
+                            exit ${'$'}?
+
+
+
                         """.stripIndent())
 
                         shell("""
